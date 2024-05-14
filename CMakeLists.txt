@@ -55,6 +55,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   # Add user sources here
   Core/Src/robot.cpp
+  Core/Src/driver.cpp
 )
 
 # Add include paths

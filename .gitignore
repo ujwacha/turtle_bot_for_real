@@ -6,3 +6,7 @@
 /.mxproject
 /.project.bak
 /build/
+/Core/Src/driver.cpp~
+/Core/Inc/.driver.hpp.~undo-tree~
+/Core/Inc/driver.hpp~
+/Core/Src/.driver.cpp.~undo-tree~
