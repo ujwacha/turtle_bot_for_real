@@ -58,6 +58,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   Core/Src/driver.cpp
 #  Core/Src/encoder.cpp
   Core/Src/kinematics.cpp
+  Core/Src/PID.cpp
 )
 
 # Add include paths

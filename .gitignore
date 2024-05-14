@@ -11,3 +11,5 @@
 /Core/Inc/driver.hpp~
 /Core/Src/.driver.cpp.~undo-tree~
 /compile_commands.json
+/.cache
+/.vscode
