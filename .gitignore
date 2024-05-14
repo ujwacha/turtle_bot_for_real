@@ -13,3 +13,5 @@
 /compile_commands.json
 /.cache
 /.vscode
+/Core/Inc/.encoder.hpp.~undo-tree~
+/Core/Src/.PID.cpp.~undo-tree~
