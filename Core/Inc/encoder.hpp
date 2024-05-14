@@ -21,7 +21,7 @@ class encoder
    init();
   }
 
-  ~encoder() = default;
+  //  ~encoder() = default;
   void init();
   float get_omega();
   int32_t get_count();
