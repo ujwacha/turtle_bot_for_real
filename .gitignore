@@ -15,3 +15,14 @@
 /.vscode
 /Core/Inc/.encoder.hpp.~undo-tree~
 /Core/Src/.PID.cpp.~undo-tree~
+/..CMakeLists.txt.~undo-tree~.~undo-tree~
+/..gitignore.~undo-tree~
+/Core/Inc/.kinematics.hpp.~undo-tree~
+/Core/Inc/.robot.h.~undo-tree~
+/Core/Src/.encoder.cpp.~undo-tree~
+/Core/Src/.kinematics.cpp.~undo-tree~
+/Core/Src/.main.c.~undo-tree~
+/Core/Src/.printf_config.c.~undo-tree~
+/Core/Src/.robot.cpp.~undo-tree~
+/Drivers/CMSIS/DSP/Include/.arm_math.h.~undo-tree~
+/cmake/stm32cubemx/.CMakeLists.txt.~undo-tree~
