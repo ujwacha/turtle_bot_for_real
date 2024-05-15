@@ -4,6 +4,7 @@
 #include "tim.h"
 #include "driver.hpp"
 #include "gpio.h"
+#include "kinematics.hpp"
 #include "api_functions.hpp"
 
 #ifdef __cplusplus
@@ -29,10 +30,13 @@ class Robot {
 
   TIM_HandleTypeDef* encoder_timers[4] = {&ENC1_Timer,&ENC2_Timer,&ENC3_Timer,&ENC5_Timer}; // for encoder timer
 
-  float max_pwm[4] = {0.00f,0.00f,0.00f,0.00f};
-
-  //Robot() {}
-  void init() {}
+  float max_pwm[4] = {500,500,500,500};
+  Kinematics kinematics = Kinematics(10.0f,10.0f);
+  Robot() {}
+  void init()
+  {
+   
+  }
   void run() {}
 };
 
