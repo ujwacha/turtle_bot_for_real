@@ -14,7 +14,7 @@
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
-  ******************************************************************************
+  ************************
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -57,7 +57,7 @@ extern TIM_HandleTypeDef htim14;
  #define M1P_Tim_Channel TIM_CHANNEL_1 
  #define M2P_Tim_Channel TIM_CHANNEL_4 
  #define M3P_Tim_Channel TIM_CHANNEL_1 
- #define M4P_Tim_Channel TIM_CHANNEL_2  
+ #define M4P_Tim_Channel TIM_CHANNEL_2 
 
  #define ENC1_Timer htim1 
  #define ENC2_Timer htim3 

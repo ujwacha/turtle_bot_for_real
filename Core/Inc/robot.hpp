@@ -1,7 +1,10 @@
 //#ifndef ROBOT_H_
-//#define ROBOT_H_
+
+#include "main.h"
+#include "stm32f407xx.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal_gpio.h"
+#include "stm32f4xx_hal_tim.h"
 #include "tim.h"
 #include "driver.hpp"
 #include "gpio.h"
@@ -13,8 +16,8 @@
 
 class Robot {
  private:
-  float base_radius = 0.0f;
-  float wheel_radius = 0.0f;
+  float base_radius = 0.595f/2.0f;
+  float wheel_radius = 0.125f/2.0f;
   float motor_omegas[4];
 
   // motor 1 : en5_ch1,m1d m1p
@@ -34,30 +37,30 @@ class Robot {
   float max_pwm[4] = {499,499,499,499};
 
   Kinematics kinematics = Kinematics(1.0,1.0);
-  
+
   Driver m1_driver = Driver(motor_dir_ports[0],motor_dir_pins[0],motor_pwm_timers[0],motor_pwm_timer_channels[0],max_pwm[0],1);
   Driver m2_driver = Driver(motor_dir_ports[1],motor_dir_pins[1],motor_pwm_timers[1],motor_pwm_timer_channels[1],max_pwm[1],1);
   Driver m3_driver = Driver(motor_dir_ports[2],motor_dir_pins[2],motor_pwm_timers[2],motor_pwm_timer_channels[2],max_pwm[2],1);
   Driver m4_driver = Driver(motor_dir_ports[3],motor_dir_pins[3],motor_pwm_timers[3],motor_pwm_timer_channels[3],max_pwm[3],1);
 
   Robot() {
-    
+
   }
 
 
   float kin_to_perc(float k) {
-    return (1.0 * k);
+   return (1.0 * k);
   }
-  
+
   void run_tick() {
 
-    kinematics.set_value(50, 45, 0);
+   kinematics.set_value(50, 45, 0);
 
 
-    m1_driver.run_motor(kin_to_perc(kinematics.v0), GPIO_PIN_SET);
-    m1_driver.run_motor(kin_to_perc(kinematics.v0), GPIO_PIN_SET);
-    m1_driver.run_motor(kin_to_perc(kinematics.v0), GPIO_PIN_SET);
-    m1_driver.run_motor(kin_to_perc(kinematics.v0), GPIO_PIN_SET);
+   m1_driver.run_motor(GPIO_PIN_SET,50.00f);
+   m2_driver.run_motor(GPIO_PIN_SET,50.00f);
+   m3_driver.run_motor(GPIO_PIN_SET,50.00f);
+   m4_driver.run_motor(GPIO_PIN_SET,50.00f);
   }
 };
 
@@ -67,8 +70,14 @@ class Robot {
 void init_robot() {
 
  Robot r;
+
+ for (int i=0; i<4; i++) {
+  HAL_TIM_PWM_Start(r.motor_pwm_timers[i], r.motor_pwm_timer_channels[i]);
+ }
+
  while (1) {
-   r.run_tick();
+  HAL_GPIO_TogglePin(M1D_GPIO_Port, M2D_Pin);
+  r.run_tick();
  }
 }
 
