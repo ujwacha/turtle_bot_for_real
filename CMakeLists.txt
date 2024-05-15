@@ -56,7 +56,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   # Add user sources here
   Core/Src/robot.cpp
   Core/Src/driver.cpp
-#  Core/Src/encoder.cpp
+  Core/Src/encoder.cpp
   Core/Src/kinematics.cpp
   Core/Src/PID.cpp
 )
