@@ -1,7 +1,7 @@
-// #include <arm_math.h>
 #include "kinematics.hpp"
+#include <arm_math.h>
 
-void kinematics::get_motor_omegas()
+void Kinematics::get_motor_omegas()
 {
    float twist[3];
    twist[0] = Vx;
@@ -21,23 +21,35 @@ void kinematics::get_motor_omegas()
       v3 = motor_omegas[3];
    }
 }
-//=====================================================================================
-// to change after fixing makefile
-float kinematics::arm_sin_f32(float degree)
-{
-   return degree;
-}
 
-float kinematics::arm_cos_f32(float degree)
+void Kinematics::set_value(float velocity, float theta_deg, float omega_inp)
 {
-   return 1.0f;
-}
-//=====================================================================================
 
-void kinematics::set_value(float velocity, float theta_deg, float omega_inp)
-{
    Vx = velocity * arm_sin_f32(theta_deg);
    Vy = velocity * arm_cos_f32(theta_deg);
    omega = omega_inp;
    get_motor_omegas();
 }
+
+Kinematics::Kinematics(float _base_radius, float _wheel_radius)
+{
+  base_radius = _base_radius;
+  wheel_radius = _wheel_radius;
+  inv_matrix[0][0] = -0.3535533905932738;
+  inv_matrix[0][1] = 0.3535533905932737;
+  inv_matrix[0][2] = 0.25;
+  
+  inv_matrix[1][0] = 0.3535533905932738;
+  inv_matrix[1][1] = 0.3535533905932738;
+  inv_matrix[1][2] = -0.25;
+
+  inv_matrix[2][0] = -0.3535533905932738;
+  inv_matrix[2][1] = 0.3535533905932738;
+  inv_matrix[2][2] = -0.25;
+  
+  inv_matrix[3][0] = 0.3535533905932738;
+  inv_matrix[3][1] = 0.3535533905932738;
+  inv_matrix[3][2] = 0.25;
+}
+
+
