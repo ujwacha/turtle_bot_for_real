@@ -13,5 +13,5 @@ class Kinematics{
 
   Kinematics(float _base_radius, float _wheel_radius);
 
-  void set_value(float velocity,float theta_deg, float omega_inp);
+  void set_value(float x,float y, float omega_inp);
 };

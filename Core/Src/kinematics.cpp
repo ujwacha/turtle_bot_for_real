@@ -1,7 +1,5 @@
 #include "kinematics.hpp"
-#include <arm_math.h>
-
-void Kinematics::get_motor_omegas(float Vx,float Vy, float omega)
+void Kinematics::get_motor_omegas()
 {
    float twist[3];
    twist[0] = Vx;
@@ -20,6 +18,15 @@ void Kinematics::get_motor_omegas(float Vx,float Vy, float omega)
       v2 = motor_omegas[2];
       v3 = motor_omegas[3];
    }
+}
+
+void Kinematics::set_value(float x, float y, float omega_inp)
+{
+
+  Vx = x;
+  Vy = y;
+  omega = omega_inp;
+  get_motor_omegas();
 }
 
 Kinematics::Kinematics(float _base_radius, float _wheel_radius)
