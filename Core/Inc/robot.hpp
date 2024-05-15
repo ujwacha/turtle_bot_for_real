@@ -17,6 +17,10 @@ class Robot {
   float wheel_radius = 0.0f;
   float motor_omegas[4];
 
+  // motor 1 : en5_ch1,m1d m1p
+  // motor 2 : en3_ch1,m2d, m2p
+  // motor 3 : en2_ch1,m3p_m3d
+  // motor 4 : en1_ch1,m4p,m4d
  public:
 
   GPIO_TypeDef* motor_dir_ports[4] = {M1D_GPIO_Port,M2D_GPIO_Port,M3D_GPIO_Port,M4D_GPIO_Port}; // for direction
@@ -25,14 +29,11 @@ class Robot {
   TIM_HandleTypeDef* motor_pwm_timers[4] = {&M1P_Timer,&M2P_Timer,&M3P_Timer,&M4P_Timer}; // for pwm timer
   uint32_t motor_pwm_timer_channels[4] = {M1P_Tim_Channel,M2P_Tim_Channel,M3P_Tim_Channel,M4P_Tim_Channel};
 
-  TIM_HandleTypeDef* encoder_timers[4] = {&ENC1_Timer,&ENC2_Timer,&ENC3_Timer,&ENC5_Timer}; // for encoder timer
+  TIM_HandleTypeDef* encoder_timers[4] = {&ENC5_Timer,&ENC3_Timer,&ENC2_Timer,&ENC1_Timer}; // for encoder timer
 
   float max_pwm[4] = {499,499,499,499};
 
   Kinematics kinematics = Kinematics(1.0,1.0);
-
-
-
   
   Driver m1_driver = Driver(motor_dir_ports[0],motor_dir_pins[0],motor_pwm_timers[0],motor_pwm_timer_channels[0],max_pwm[0],1);
   Driver m2_driver = Driver(motor_dir_ports[1],motor_dir_pins[1],motor_pwm_timers[1],motor_pwm_timer_channels[1],max_pwm[1],1);

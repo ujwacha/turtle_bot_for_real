@@ -1,3 +1,4 @@
+#pragma once
 class Kinematics{
  private:
   float motor_omegas[4]; // array to store motor omega
