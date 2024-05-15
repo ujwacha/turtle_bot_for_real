@@ -8,14 +8,14 @@ class Driver    {
   void run_motor(float percentage, GPIO_PinState dir);
 
 
-  private:
+ private:
   GPIO_PinState get_pinstate(GPIO_PinState current); // sets the positive direction of spin for the motor
 
   GPIO_TypeDef* dir_channel; // dicection pin channel
   uint16_t dir_pin; // direction pin
 
-  
-  
+
+
   TIM_HandleTypeDef* timer_pwm; // timer handler to set pwm
   uint32_t timer_channel; // channel for the pwm
   int max_pwm; // max pwm value
