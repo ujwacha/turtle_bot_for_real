@@ -28,7 +28,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "robot.hpp"
+#include "api_functions.hpp"
 #include <stdint.h>
 /* USER CODE END Includes */
 
@@ -61,15 +61,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-uint32_t counter = 0 ;
-
-
-
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
-  counter = __HAL_TIM_GET_COUNTER(htim);
-}
-
 /* USER CODE END 0 */
 
 /**
