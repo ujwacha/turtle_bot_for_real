@@ -28,7 +28,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "robot.h"
+#include "robot.hpp"
 #include <stdint.h>
 /* USER CODE END Includes */
 
