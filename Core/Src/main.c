@@ -28,6 +28,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+<<<<<<< HEAD
 #include "api_functions.hpp"
 #include <stdint.h>
 /* USER CODE END Includes */
