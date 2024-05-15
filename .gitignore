@@ -26,3 +26,8 @@
 /Core/Src/.robot.cpp.~undo-tree~
 /Drivers/CMSIS/DSP/Include/.arm_math.h.~undo-tree~
 /cmake/stm32cubemx/.CMakeLists.txt.~undo-tree~
+/Core/Inc/.api_functions.hpp.~undo-tree~
+/Core/Inc/.robot.hpp.~undo-tree~
+/Core/Inc/.tim.h.~undo-tree~
+/Core/Inc/api_functions.hpp~
+/Core/Inc/robot.hpp~
