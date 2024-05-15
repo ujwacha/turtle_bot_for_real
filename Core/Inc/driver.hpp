@@ -1,17 +1,17 @@
 #include <cstdint>
 #include "main.h"
+#include "stm32f407xx.h"
 #include "stm32f4xx_hal_tim.h"
 class Driver{
   public:
-  Driver(uint32_t dchannel, uint32_t dpin, TIM_HandleTypeDef* tim_pwm, uint32_t channel, int m_pwm);
+  Driver(GPIO_TypeDef* dchannel, uint16_t dpin, TIM_HandleTypeDef* tim_pwm, uint16_t channel, int m_pwm);
   void run_motor(float percentage, int dir);
 
-
   private:
-  uint32_t dir_channel;
-  uint32_t dir_pin;
+  GPIO_TypeDef* dir_channel;
+  uint16_t dir_pin;
 
   TIM_HandleTypeDef* timer_pwm;
-  uint32_t timer_channel;
+  uint16_t timer_channel;
   int max_pwm;
 };
