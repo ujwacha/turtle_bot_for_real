@@ -49,7 +49,6 @@ extern TIM_HandleTypeDef htim10;
 extern TIM_HandleTypeDef htim14;
 
 /* USER CODE BEGIN Private defines */
-<<<<<<< HEAD
 /* #define M1P_Timer htim2 */
 /* #define M2P_Timer htim2 */
 /* #define M3P_Timer htim9 */
@@ -64,22 +63,6 @@ extern TIM_HandleTypeDef htim14;
 /* #define ENC2_Timer htim3 */
 /* #define ENC3_Timer htim4 */
 /* #define ENC5_Timer hitm8 */
-=======
-#define M1P_Timer htim2
-#define M2P_Timer htim2
-#define M3P_Timer htim9
-#define M4P_Timer htim9
-
-#define M1P_Tim_Channel TIM_CHANNEL_1
-#define M2P_Tim_Channel TIM_CHANNEL_4
-#define M3P_Tim_Channel TIM_CHANNEL_1
-#define M4P_Tim_Channel TIM_CHANNEL_2
-
-#define ENC1_Timer htim1
-#define ENC2_Timer htim3
-#define ENC3_Timer htim4
-#define ENC5_Timer htim8
->>>>>>> origin/main
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);
