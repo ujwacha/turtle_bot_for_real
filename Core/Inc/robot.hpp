@@ -12,6 +12,8 @@
 #include "kinematics.hpp"
 #include "api_functions.hpp"
 #include "kinematics.hpp"
+#include "crc8.hpp"
+#include "joystick.hpp"
 #include <cstdint>
 
 #ifdef __cplusplus

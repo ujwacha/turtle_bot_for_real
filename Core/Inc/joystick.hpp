@@ -1,6 +1,16 @@
 #ifdef _JOY_MSG_HPP
 #define _JOY_MSG_HPP
 
+
+#include <memory.h>
+#include "usart.h"
+#include "gpio.c"
+#include "crc8.hpp"
+
+
+#define START_BYTE 0xA5
+
+
 #define BUTTONS(button) (1 << button)
 namespace JoyMsg
 {
@@ -37,3 +47,7 @@ namespace JoyMsg
   uint8_t rt;
   uint16_t buttons;
 };
+
+bool is_waiting_for_start_byte = true;
+uint8_t data[66];
+uint8_t crc_table[CRC8_TABLE_SIZE];
