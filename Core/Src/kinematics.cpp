@@ -5,7 +5,8 @@ void Kinematics::get_motor_omegas(float Vx, float Vy, float omega)
  float twist[3];
  twist[0] = Vx;
  twist[1] = Vy;
- twist[2] = omega * base_radius;
+ twist[2] = omega;
+ //twist[2] = omega * base_radius;
 
  for (int i = 0; i < 4; i++)
  {
