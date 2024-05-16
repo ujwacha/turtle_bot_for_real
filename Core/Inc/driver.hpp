@@ -2,10 +2,11 @@
 #include "stm32f407xx.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_tim.h"
+
 class Driver    {
   public:
   Driver(GPIO_TypeDef* dchannel, uint16_t dpin, TIM_HandleTypeDef* tim_pwm, uint32_t channel, int m_pwm, int8_t pdir);
-  void run_motor(float percentage, GPIO_PinState dir);
+  void run_motor(GPIO_PinState dir,float percentage);
 
 
  private:

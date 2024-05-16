@@ -59,6 +59,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   Core/Src/encoder.cpp
   Core/Src/kinematics.cpp
   Core/Src/PID.cpp
+  Core/Src/printf_config.c
 )
 
 # Add include paths
