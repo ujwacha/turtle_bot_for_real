@@ -10,7 +10,6 @@ public:
   float omega = 0.0f;
   int64_t count_aggregate = 0;
   uint32_t last_reset_time = 0;
-  int16_t error;
 
  public:
   Encoder(TIM_HandleTypeDef *_henc, int16_t _cpr, uint16_t _sample_time = 1)
@@ -23,7 +22,7 @@ public:
 
   //  ~encoder() = default;
   void init();
-  float get_omega();
+  float get_encoder_omega();
   int16_t get_count();
   int64_t get_count_aggregate();
   void reset_encoder_count();

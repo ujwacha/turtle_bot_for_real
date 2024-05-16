@@ -24,7 +24,7 @@ class Robot {
   // for the dimensions of the motor and the base
   static float base_radius; 
   static float wheel_radius;
-  static uint32_t prev_tim;
+   uint32_t prev_tim;
 
   // for the direction pins and ports
   static GPIO_TypeDef* motor_dir_ports[4];
@@ -37,7 +37,7 @@ class Robot {
   // for encoder timer & total count in one revolution
   static TIM_HandleTypeDef* encoder_timers[4];
   static uint16_t count_per_revolution[4];
-
+  
   static float max_pwm[4] ; // this is the value of pwm for 100% duty cycle
   static float motor_omegas[4];
 

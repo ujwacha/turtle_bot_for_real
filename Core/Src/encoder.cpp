@@ -4,15 +4,10 @@
 void Encoder::init()
 {
  HAL_TIM_Encoder_Start(henc, TIM_CHANNEL_ALL);
-
-
- error = (int16_t) __HAL_TIM_GET_COUNTER(henc);
-
-
  last_reset_time = HAL_GetTick();
 }
 
-float Encoder::get_omega()
+float Encoder::get_encoder_omega()
 {
  uint32_t sampling_time = HAL_GetTick() - last_reset_time;
  if(sampling_time >= sample_time)
@@ -25,12 +20,12 @@ float Encoder::get_omega()
 
 int16_t Encoder::get_count()
 {
-  int16_t count = (int16_t) __HAL_TIM_GET_COUNTER(henc);
+  int16_t count = henc->Instance->CNT;
  // if(count > int32_t(32768))
  // {
  //  count = count - int32_t(65536);
  // }
- return count - error;
+ return count;
 }
 
 int64_t Encoder::get_count_aggregate()

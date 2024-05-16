@@ -1,11 +1,11 @@
 #ifdef _JOY_MSG_HPP
 #define _JOY_MSG_HPP
-
+#endif
 
 #include <memory.h>
 #include "usart.h"
-#include "gpio.c"
-#include "crc8.hpp"
+//#include <gpio.c>
+//#include "crc8.hpp"
 
 
 #define START_BYTE 0xA5
