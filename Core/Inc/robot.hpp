@@ -3,6 +3,7 @@
 #include "main.h"
 #include "stm32f407xx.h"
 #include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_tim.h"
 #include "tim.h"
@@ -11,15 +12,16 @@
 #include "kinematics.hpp"
 #include "api_functions.hpp"
 #include "kinematics.hpp"
+#include <cstdint>
 
 #ifdef __cplusplus
 
 class Robot {
  private:
   float base_radius = 0.595f/2.0f;
-  float wheel_radius = 0.125f/2.0f;
+  float wheel_radius = 0.425f/2.0f;
   float motor_omegas[4];
-
+  uint32_t prev_tim;
   // motor 1 : en5_ch1,m1d m1p
   // motor 2 : en3_ch1,m2d, m2p
   // motor 3 : en2_ch1,m3p_m3d
@@ -36,31 +38,62 @@ class Robot {
 
   float max_pwm[4] = {499,499,499,499};
 
-  Kinematics kinematics = Kinematics(1.0,1.0);
+  Kinematics kinematics = Kinematics(base_radius,wheel_radius);
 
   Driver m1_driver = Driver(motor_dir_ports[0],motor_dir_pins[0],motor_pwm_timers[0],motor_pwm_timer_channels[0],max_pwm[0],1);
-  Driver m2_driver = Driver(motor_dir_ports[1],motor_dir_pins[1],motor_pwm_timers[1],motor_pwm_timer_channels[1],max_pwm[1],1);
-  Driver m3_driver = Driver(motor_dir_ports[2],motor_dir_pins[2],motor_pwm_timers[2],motor_pwm_timer_channels[2],max_pwm[2],1);
-  Driver m4_driver = Driver(motor_dir_ports[3],motor_dir_pins[3],motor_pwm_timers[3],motor_pwm_timer_channels[3],max_pwm[3],1);
+  Driver m2_driver = Driver(motor_dir_ports[3],motor_dir_pins[3],motor_pwm_timers[3],motor_pwm_timer_channels[3],max_pwm[3],1);
+  Driver m3_driver = Driver(motor_dir_ports[1],motor_dir_pins[1],motor_pwm_timers[1],motor_pwm_timer_channels[1],max_pwm[1],-1);
+  Driver m4_driver = Driver(motor_dir_ports[2],motor_dir_pins[2],motor_pwm_timers[2],motor_pwm_timer_channels[2],max_pwm[2],-1);
 
   Robot() {
 
   }
 
-
   float kin_to_perc(float k) {
-   return (1.0 * k);
+   if(k<0) k=k*(-1.0);
+   return (10.0f * k);
+  }
+
+
+  inline GPIO_PinState get_dir(float omega)
+  {
+   if(omega <= 0) return GPIO_PIN_SET;
+   else return GPIO_PIN_RESET;
+  }
+
+  void temp_run()
+  {
+   float m1_vel = kinematics.v1;
+   float m2_vel = kinematics.v2;
+   float m3_vel = kinematics.v3;
+   float m4_vel = kinematics.v4;
+   prev_tim = HAL_GetTick();
+   while ((HAL_GetTick()-prev_tim) <= 3000)   {
+	m1_driver.run_motor(get_dir(m1_vel), kin_to_perc(m1_vel)); //0th position
+	m2_driver.run_motor(get_dir(m2_vel), kin_to_perc(m1_vel)); // 3rd position
+	m3_driver.run_motor(get_dir(m3_vel), kin_to_perc(m1_vel)); // 1st position
+	m4_driver.run_motor(get_dir(m4_vel), kin_to_perc(m1_vel)); // 2nd positio
+   }
+   kinematics.reset();
   }
 
   void run_tick() {
+   kinematics.get_motor_omegas(0.4f,0.0f, 0.0f);
+   temp_run();
+   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
-   kinematics.set_value(50, 45, 0);
+   kinematics.get_motor_omegas(0.0f,0.4f, 0.0f);
+   temp_run();
+   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
+   kinematics.get_motor_omegas(-0.4f,0.0f, 0.0f);
+   temp_run();
+   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
-   m1_driver.run_motor(GPIO_PIN_SET,50.00f);
-   m2_driver.run_motor(GPIO_PIN_SET,50.00f);
-   m3_driver.run_motor(GPIO_PIN_SET,50.00f);
-   m4_driver.run_motor(GPIO_PIN_SET,50.00f);
+   kinematics.get_motor_omegas(0.0f,-0.4f, 0.0f);
+   temp_run();
+   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+
   }
 };
 
@@ -70,16 +103,12 @@ class Robot {
 void init_robot() {
 
  Robot r;
-
- for (int i=0; i<4; i++) {
-  HAL_TIM_PWM_Start(r.motor_pwm_timers[i], r.motor_pwm_timer_channels[i]);
- }
-
  while (1) {
   HAL_GPIO_TogglePin(M1D_GPIO_Port, M2D_Pin);
   r.run_tick();
  }
 }
+
 
 void operate_robot() {
 
