@@ -32,20 +32,20 @@ Kinematics::Kinematics(float _base_radius, float _wheel_radius)
 {
  base_radius = _base_radius;
  wheel_radius = _wheel_radius;
- inv_matrix[0][0] = -0.3535533905932738;
- inv_matrix[0][1] = 0.3535533905932737;
+ inv_matrix[0][0] = 0.3535533905932738;
+ inv_matrix[0][1] = -0.3535533905932737;
  inv_matrix[0][2] = 0.25;
 
  inv_matrix[1][0] = 0.3535533905932738;
  inv_matrix[1][1] = 0.3535533905932738;
- inv_matrix[1][2] = -0.25;
+ inv_matrix[1][2] = 0.25;
 
  inv_matrix[2][0] = -0.3535533905932738;
  inv_matrix[2][1] = 0.3535533905932738;
- inv_matrix[2][2] = -0.25;
+ inv_matrix[2][2] = 0.25;
 
- inv_matrix[3][0] = 0.3535533905932738;
- inv_matrix[3][1] = 0.3535533905932738;
+ inv_matrix[3][0] = -0.3535533905932738;
+ inv_matrix[3][1] = -0.3535533905932738;
  inv_matrix[3][2] = 0.25;
 }
 
