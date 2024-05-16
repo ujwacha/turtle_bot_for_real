@@ -20,15 +20,6 @@ void Kinematics::get_motor_omegas()
    }
 }
 
-void Kinematics::set_value(float x, float y, float omega_inp)
-{
-
-  Vx = x;
-  Vy = y;
-  omega = omega_inp;
-  get_motor_omegas();
-}
-
 Kinematics::Kinematics(float _base_radius, float _wheel_radius)
 {
   base_radius = _base_radius;

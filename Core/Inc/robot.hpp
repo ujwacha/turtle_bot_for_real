@@ -5,6 +5,7 @@
 #include "tim.h"
 #include "driver.hpp"
 #include "gpio.h"
+#include "kinematics.hpp"
 #include "api_functions.hpp"
 #include "kinematics.hpp"
 

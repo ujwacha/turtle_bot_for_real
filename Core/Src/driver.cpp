@@ -10,8 +10,6 @@ Driver::Driver(GPIO_TypeDef* dchannel, uint16_t dpin, TIM_HandleTypeDef* tim_pwm
     timer_pwm = tim_pwm;
     max_pwm = m_pwm;
     pos_dir = pdir;
-
-
   }
 
 void Driver::run_motor(float percentage, GPIO_PinState dir) {
