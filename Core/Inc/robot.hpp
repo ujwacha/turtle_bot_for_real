@@ -82,7 +82,7 @@ class Robot {
    temp_run();
    HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
-   kinematics.get_motor_omegas(0.0f,0.4f, 0.0f);
+   //kinematics.get_motor_omegas(0.0f,0.4f, 0.0f);
    temp_run();
    HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
