@@ -1,3 +1,3 @@
 #!/bin/bash
-
-st-flash write build/turtle_bot.elf 0x8000000b
+arm-none-eabi-objcopy -O binary -S build/turtle_bot.elf build/turtle_bot.bin
+st-flash write build/turtle_bot.bin 0x8000000
