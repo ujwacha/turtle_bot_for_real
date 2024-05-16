@@ -67,6 +67,9 @@ void init_robot() {
  Robot r;
  while (1) {
    r.run_tick();
+   HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+
+   HAL_Delay(1000);
  }
 }
 
