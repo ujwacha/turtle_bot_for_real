@@ -13,11 +13,13 @@
 #include "kinematics.hpp"
 #include "api_functions.hpp"
 #include "kinematics.hpp"
+#include "PID.h"
 //#include "crc8.hpp"
 //#include "joystick.hpp"
-#include <cstdint>
-
 #ifdef __cplusplus
+#include <cstdint>
+#include <cstdio>
+
 
 class Robot {
  private:
@@ -41,6 +43,8 @@ class Robot {
   static float max_pwm[4] ; // this is the value of pwm for 100% duty cycle
   static float motor_omegas[4];
 
+  // static PID motor_controllers[4];
+
  public:
 
   Kinematics kinematics = Kinematics(base_radius,wheel_radius);
@@ -55,8 +59,16 @@ class Robot {
   Encoder m3_encoder = Encoder(encoder_timers[3],count_per_revolution[3]);
   Encoder m4_encoder = Encoder(encoder_timers[1],count_per_revolution[1]);
 
-  Robot() {
 
+
+  // PID m2_encoder = 
+  // PID m3_encoder = 
+  // PID m4_encoder = 
+
+
+
+  Robot() {
+    
   }
 
   float kin_to_perc(float k) {
@@ -77,39 +89,64 @@ class Robot {
    float m2_vel = kinematics.v2;
    float m3_vel = kinematics.v3;
    float m4_vel = kinematics.v4;
-   prev_tim = HAL_GetTick();
-   while ((HAL_GetTick()-prev_tim) <= 3000)   {
-	m1_driver.run_motor(get_dir(m1_vel), kin_to_perc(m1_vel)); 
-	m2_driver.run_motor(get_dir(m2_vel), kin_to_perc(m2_vel)); 
-	m3_driver.run_motor(get_dir(m3_vel), kin_to_perc(m3_vel)); 
-	m4_driver.run_motor(get_dir(m4_vel), kin_to_perc(m4_vel)); 
-	//m1_driver.run_motor(GPIO_PIN_RESET,10.0f); // this is perfectly good
+   //prev_tim = HAL_GetTick();
+   //   while ((HAL_GetTick()-prev_tim) <= 3000)   {
+   m1_driver.run_motor(get_dir(m1_vel), kin_to_perc(m1_vel)); 
+   m2_driver.run_motor(get_dir(m2_vel), kin_to_perc(m2_vel)); 
+   m3_driver.run_motor(get_dir(m3_vel), kin_to_perc(m3_vel)); 
+   m4_driver.run_motor(get_dir(m4_vel), kin_to_perc(m4_vel)); 
+   //m1_driver.run_motor(GPIO_PIN_RESET,10.0f); // this is perfectly good
 	//m2_driver.run_motor(GPIO_PIN_RESET,10.0f);//this runs motor 3
 	//m3_driver.run_motor(GPIO_PIN_RESET,10.0f);
 	//m4_driver.run_motor(GPIO_PIN_RESET,10.0f);//this runs motor 2
-   }
-   kinematics.reset();
+	//   }
+	//   kinematics.reset();
   }
 
   void run_tick() {
 
 
-   kinematics.get_motor_omegas(0.4f,0.0f, 0.0f);
-   temp_run();
-   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   // kinematics.get_motor_omegas(0.4f,0.0f, 0.0f);
+   // temp_run();
+   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
-   kinematics.get_motor_omegas(0.0f,0.4f, 0.0f);
-   temp_run();
-   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   // kinematics.get_motor_omegas(0.0f,0.4f, 0.0f);
+   // temp_run();
+   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
-   kinematics.get_motor_omegas(-0.4f,0.0f, 0.0f);
-   temp_run();
-   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   // kinematics.get_motor_omegas(-0.4f,0.0f, 0.0f);
+   // temp_run();
+   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
-   kinematics.get_motor_omegas(0.0f,-0.4f, 0.0f);
-   temp_run();
-   HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   // kinematics.get_motor_omegas(0.0f,-0.4f, 0.0f);
+   // temp_run();
+   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
 
+
+    if (HAL_GetTick() - prev_tim < 30) return;
+    
+    kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f);
+    temp_run();
+    kinematics.reset();
+
+    // int32_t count = encoder_timers[0]->Instance->CNT;
+
+    // if(count > int32_t(32768))
+    //   {
+    // 	count = count - int32_t(65536);
+    //   }
+
+    float omega = m1_encoder.get_encoder_omega();
+
+    int data = omega * 100;
+
+    printf("%i\n", data);
+
+
+
+    prev_tim = HAL_GetTick();
+
+    //  encoder_timers[0]->Instance->CNT = 0;
   }
 };
 

@@ -18,24 +18,24 @@ float Encoder::get_encoder_omega()
  return omega;
 }
 
-int16_t Encoder::get_count()
+int32_t Encoder::get_count()
 {
-  int16_t count = henc->Instance->CNT;
- // if(count > int32_t(32768))
- // {
- //  count = count - int32_t(65536);
- // }
- return count;
+  int32_t count = henc->Instance->CNT;
+  if(count > int32_t(32768))
+    {
+      count = count - int32_t(65536);
+    }
+  return count;
 }
 
-int64_t Encoder::get_count_aggregate()
-{
- return count_aggregate + get_count();
-}
+// int64_t Encoder::get_count_aggregate()
+// {
+//  return count_aggregate + get_count();
+// }
 
 void Encoder::reset_encoder_count()
 {
- count_aggregate += get_count();
+  // count_aggregate += get_count();
  henc->Instance->CNT = 0;
  last_reset_time = HAL_GetTick();
 }
