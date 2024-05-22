@@ -14,12 +14,11 @@
 #include "api_functions.hpp"
 #include "kinematics.hpp"
 #include "PID.hpp"
-//#include "crc8.hpp"
-//#include "joystick.hpp"
+#include "crc8.hpp"
+#include "joystick.hpp"
 #ifdef __cplusplus
 #include <cstdint>
 #include <cstdio>
-
 
 class Robot {
  private:
@@ -43,7 +42,15 @@ class Robot {
   static float max_pwm[4] ; // this is the value of pwm for 100% duty cycle
   static float motor_omegas[4];
 
-  // static PID motor_controllers[4];
+  double pid_inputs[4];
+  double pid_outputs[4];
+  double pid_set_points[4];
+
+  float max_motor_omegas[4];
+
+  double kp[4];
+  double ki[4];
+  double kd[4];
 
  public:
 
@@ -59,47 +66,26 @@ class Robot {
   Encoder m3_encoder = Encoder(encoder_timers[3],count_per_revolution[3]);
   Encoder m4_encoder = Encoder(encoder_timers[1],count_per_revolution[1]);
 
+  PID Controller1 = PID(pid_inputs+0, pid_outputs+0, pid_set_points+0, kp[0], ki[0], kd[0], P_ON_E, DIRECT); // passing pointer of pid_inputs, pid_outputs  and pid_set_points
+  PID Controller2 = PID(pid_inputs+1, pid_outputs+1, pid_set_points+1, kp[1], ki[1], kd[1], P_ON_E, DIRECT);// passing pointer of pid_inputs, pid_outputs  and pid_set_points
+  PID Controller3 = PID(pid_inputs+2, pid_outputs+2, pid_set_points+2, kp[2], ki[2], kd[2], P_ON_E, DIRECT);// passing pointer of pid_inputs, pid_outputs  and pid_set_points
+  PID Controller4 = PID(pid_inputs+3, pid_outputs+3, pid_set_points+3, kp[3], ki[3], kd[3], P_ON_E, DIRECT);// passing pointer of pid_inputs, pid_outputs  and pid_set_points
 
-  double m1_vel;
-  double m2_vel;
-  double m3_vel; 
-  double m4_vel;
+  void controller_init()
+  {
+   Controller1.SetOutputLimits(0,max_motor_omegas[0]);
+   Controller2.SetOutputLimits(0,max_motor_omegas[1]);
+   Controller3.SetOutputLimits(0,max_motor_omegas[2]);
+   Controller4.SetOutputLimits(0,max_motor_omegas[3]);
 
-  // PID m2_encoder = 
-  // PID m3_encoder = 
-  // PID m4_encoder = 
-  PID Controller1 = PID(&m1_input, &m1_output, &m1_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
-  PID Controller2 = PID(&m2_input, &m2_output, &m2_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
-  PID Controller3 = PID(&m3_input, &m3_output, &m3_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
-  PID Controller4 = PID(&m4_input, &m4_output, &m4_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
+   Controller1.SetSampleTime(30);
+   Controller2.SetSampleTime(30);
+   Controller3.SetSampleTime(30);
+   Controller4.SetSampleTime(30);
+  }
 
-  double m1_input;
-  double m1_output;
-  
-  double m2_input;
-  double m2_output;
-  
-
-  double m3_input;
-  double m3_output;
-  
-
-  double m4_input;
-  double m4_output;
-  
-
-
-  
   Robot() {
-    Controller1.SetOutputLimits(-499.0, 499.0);
-    Controller2.SetOutputLimits(-499.0, 499.0);
-    Controller3.SetOutputLimits(-499.0, 499.0);
-    Controller4.SetOutputLimits(-499.0, 499.0);
-
-    Controller1.SetSampleTime(30);
-    Controller2.SetSampleTime(30);
-    Controller3.SetSampleTime(30);
-    Controller4.SetSampleTime(30);
+   controller_init();
   }
 
   float kin_to_perc(float k) {
@@ -114,82 +100,32 @@ class Robot {
    else return GPIO_PIN_RESET;
   }
 
-  void temp_run()
-  {
-   m1_vel = kinematics.v1;
-   m2_vel = kinematics.v2;
-   m3_vel = kinematics.v3;
-   m4_vel = kinematics.v4;
-
-
-
-   if((
-      Controller1.Compute()&&
-      Controller2.Compute()&&
-      Controller3.Compute()&&
-      Controller4.Compute()
-       )) {
-     
-   }
-
-   //prev_tim = HAL_GetTick();
-   //   while ((HAL_GetTick()-prev_tim) <= 3000)   {
-   m1_driver.run_motor(get_dir(m1_vel), kin_to_perc(m1_vel)); 
-   m2_driver.run_motor(get_dir(m2_vel), kin_to_perc(m2_vel)); 
-   m3_driver.run_motor(get_dir(m3_vel), kin_to_perc(m3_vel)); 
-   m4_driver.run_motor(get_dir(m4_vel), kin_to_perc(m4_vel)); 
-   //m1_driver.run_motor(GPIO_PIN_RESET,10.0f); // this is perfectly good
-	//m2_driver.run_motor(GPIO_PIN_RESET,10.0f);//this runs motor 3
-	//m3_driver.run_motor(GPIO_PIN_RESET,10.0f);
-	//m4_driver.run_motor(GPIO_PIN_RESET,10.0f);//this runs motor 2
-	//   }
-	//   kinematics.reset();
-  }
-
   void run_tick() {
 
+   if (HAL_GetTick() - prev_tim < 30) return;
 
-   // kinematics.get_motor_omegas(0.4f,0.0f, 0.0f);
-   // temp_run();
-   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
 
-   // kinematics.get_motor_omegas(0.0f,0.4f, 0.0f);
-   // temp_run();
-   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   pid_inputs[0] = m1_encoder.get_encoder_omega();
+   pid_inputs[1] = m1_encoder.get_encoder_omega();
+   pid_inputs[2] = m1_encoder.get_encoder_omega();
+   pid_inputs[3] = m1_encoder.get_encoder_omega();
 
-   // kinematics.get_motor_omegas(-0.4f,0.0f, 0.0f);
-   // temp_run();
-   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   pid_set_points[0] = kinematics.v1;
+   pid_set_points[1] = kinematics.v2;
+   pid_set_points[2] = kinematics.v3;
+   pid_set_points[3] = kinematics.v4;
 
-   // kinematics.get_motor_omegas(0.0f,-0.4f, 0.0f);
-   // temp_run();
-   // HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port,BLUE_LED_Pin);
+   if((
+	  Controller1.Compute()&&
+	  Controller2.Compute()&&
+	  Controller3.Compute()&&
+	  Controller4.Compute()
+	  )) {}
 
+   m1_driver.run_motor(get_dir(pid_inputs[0]), pid_outputs[0]);
 
-    if (HAL_GetTick() - prev_tim < 30) return;
-    
-    kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f);
-    temp_run();
-    kinematics.reset();
-
-    // int32_t count = encoder_timers[0]->Instance->CNT;
-
-    // if(count > int32_t(32768))
-    //   {
-    // 	count = count - int32_t(65536);
-    //   }
-
-    float omega = m1_encoder.get_encoder_omega();
-
-    int data = omega * 100;
-
-    printf("%i\n", data);
-
-
-
-    prev_tim = HAL_GetTick();
-
-    //  encoder_timers[0]->Instance->CNT = 0;
+   prev_tim = HAL_GetTick();
   }
 };
 
