@@ -48,6 +48,8 @@ Kinematics::Kinematics(float _base_radius, float _wheel_radius)
  inv_matrix[3][0] = -0.3535533905932738;
  inv_matrix[3][1] = -0.3535533905932738;
  inv_matrix[3][2] = 0.25;
+
+ reset();
 }
 
 

@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "crc.h"
 #include "dma.h"
+#include "stm32f4xx_hal_crc.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
@@ -103,15 +105,14 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM14_Init();
   MX_UART4_Init();
+  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
 
   init_robot();
   operate_robot();
-  
-  
-  /* USER CODE END 2 */
 
+  /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
