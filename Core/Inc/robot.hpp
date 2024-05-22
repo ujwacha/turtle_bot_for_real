@@ -13,7 +13,7 @@
 #include "kinematics.hpp"
 #include "api_functions.hpp"
 #include "kinematics.hpp"
-#include "PID.h"
+#include "PID.hpp"
 //#include "crc8.hpp"
 //#include "joystick.hpp"
 #ifdef __cplusplus
@@ -60,15 +60,46 @@ class Robot {
   Encoder m4_encoder = Encoder(encoder_timers[1],count_per_revolution[1]);
 
 
+  double m1_vel;
+  double m2_vel;
+  double m3_vel; 
+  double m4_vel;
 
   // PID m2_encoder = 
   // PID m3_encoder = 
   // PID m4_encoder = 
+  PID Controller1 = PID(&m1_input, &m1_output, &m1_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
+  PID Controller2 = PID(&m2_input, &m2_output, &m2_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
+  PID Controller3 = PID(&m3_input, &m3_output, &m3_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
+  PID Controller4 = PID(&m4_input, &m4_output, &m4_vel, 1.0, 0.0, 0.0, P_ON_E, DIRECT);
+
+  double m1_input;
+  double m1_output;
+  
+  double m2_input;
+  double m2_output;
+  
+
+  double m3_input;
+  double m3_output;
+  
+
+  double m4_input;
+  double m4_output;
+  
 
 
-
+  
   Robot() {
-    
+    Controller1.SetOutputLimits(-499.0, 499.0);
+    Controller2.SetOutputLimits(-499.0, 499.0);
+    Controller3.SetOutputLimits(-499.0, 499.0);
+    Controller4.SetOutputLimits(-499.0, 499.0);
+
+    Controller1.SetSampleTime(30);
+    Controller2.SetSampleTime(30);
+    Controller3.SetSampleTime(30);
+    Controller4.SetSampleTime(30);
   }
 
   float kin_to_perc(float k) {
@@ -85,10 +116,22 @@ class Robot {
 
   void temp_run()
   {
-   float m1_vel = kinematics.v1;
-   float m2_vel = kinematics.v2;
-   float m3_vel = kinematics.v3;
-   float m4_vel = kinematics.v4;
+   m1_vel = kinematics.v1;
+   m2_vel = kinematics.v2;
+   m3_vel = kinematics.v3;
+   m4_vel = kinematics.v4;
+
+
+
+   if((
+      Controller1.Compute()&&
+      Controller2.Compute()&&
+      Controller3.Compute()&&
+      Controller4.Compute()
+       )) {
+     
+   }
+
    //prev_tim = HAL_GetTick();
    //   while ((HAL_GetTick()-prev_tim) <= 3000)   {
    m1_driver.run_motor(get_dir(m1_vel), kin_to_perc(m1_vel)); 

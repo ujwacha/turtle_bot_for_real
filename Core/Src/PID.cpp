@@ -4,7 +4,7 @@
  *
  * This Library is licensed under the MIT License
  **********************************************************************************************/
-#include "PID.h"
+#include "PID.hpp"
 #include <cstdint>
 #include <stm32f4xx_hal.h>
 /*Constructor (...)*********************************************************
