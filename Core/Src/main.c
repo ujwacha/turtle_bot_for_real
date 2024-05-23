@@ -110,7 +110,6 @@ int main(void)
 
 
   init_robot();
-  operate_robot();
 
   /* USER CODE END 2 */
   /* Infinite loop */

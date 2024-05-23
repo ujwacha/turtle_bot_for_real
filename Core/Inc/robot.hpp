@@ -22,7 +22,7 @@
 
 class Robot
 {
-private:
+ private:
   // for the dimensions of the motor and the base
   static float base_radius;
   static float wheel_radius;
@@ -53,85 +53,98 @@ private:
   double ki[4];
   double kd[4];
 
-public:
+ public:
   Robot() {
-    robot_init();
+   robot_init();
   }
+
+  Driver motor_drivers[4] ={
+   Driver(motor_dir_ports[0], motor_dir_pins[0], motor_pwm_timers[0], motor_pwm_timer_channels[0], max_pwm[0], 1),
+   Driver(motor_dir_ports[3], motor_dir_pins[3], motor_pwm_timers[3], motor_pwm_timer_channels[3], max_pwm[3], 1),
+   Driver(motor_dir_ports[1], motor_dir_pins[1], motor_pwm_timers[1], motor_pwm_timer_channels[1], max_pwm[1], 1),
+   Driver(motor_dir_ports[2], motor_dir_pins[2], motor_pwm_timers[2], motor_pwm_timer_channels[2], max_pwm[2], 1)
+  } ;
+  Encoder motor_encoders[4] = {
+   Encoder(encoder_timers[0], count_per_revolution[0],10),
+   Encoder(encoder_timers[3], count_per_revolution[3],10),
+   Encoder(encoder_timers[1], count_per_revolution[1],10),
+   Encoder(encoder_timers[2], count_per_revolution[2],10),
+  };
+  PID pid_controllers[4] = {
+   PID(pid_inputs + 0, pid_outputs + 0, pid_set_points + 0, kp[0], ki[0], kd[0], P_ON_E, DIRECT),
+   PID(pid_inputs + 3, pid_outputs + 3, pid_set_points + 3, kp[3], ki[3], kd[3], P_ON_E, DIRECT),
+   PID(pid_inputs + 1, pid_outputs + 1, pid_set_points + 1, kp[1], ki[1], kd[1], P_ON_E, DIRECT),
+   PID(pid_inputs + 2, pid_outputs + 2, pid_set_points + 2, kp[2], ki[2], kd[2], P_ON_E, DIRECT),
+  };
 
   void robot_init()
   {
-    for (int i = 0; i < 4; i++)
-    {
-      // Order: 1, 4, 2, 3
-      motor_drivers[i] = Driver(motor_dir_ports[i], motor_dir_pins[i], motor_pwm_timers[i], motor_pwm_timer_channels[i], max_pwm[i], 1);
-      motor_encoders[i] = Encoder(encoder_timers[i], count_per_revolution[i]);
-      pid_controllers[i] = PID(pid_inputs + i, pid_outputs + i, pid_set_points + i, kp[i], ki[i], kd[i], P_ON_E, DIRECT); // passing pointer of pid_inputs, pid_outputs  and pid_set_points
-
-      pid_controllers[i].SetOutputLimits(0, max_motor_omegas[i]);
-      pid_controllers[i].SetSampleTime(30);
-    }
+   for (int i = 0; i < 4; i++)
+   {
+	pid_controllers[i].SetOutputLimits(0, max_motor_omegas[i]);
+	pid_controllers[i].SetSampleTime(30);
+   }
   }
+
   Kinematics kinematics = Kinematics(base_radius, wheel_radius);
-  Driver motor_drivers[4];
-  Encoder motor_encoders[4];
-  PID pid_controllers[4];
 
   float kin_to_perc(float k)
   {
-    if (k < 0)
-      k = k * (-1.0);
-    return (10.0f * k);
+   if (k < 0)
+	k = k * (-1.0);
+   return (10.0f * k);
   }
 
-  inline GPIO_PinState get_dir(float omega)
+  GPIO_PinState get_dir(float omega)
   {
-    if (omega <= 0)
-      return GPIO_PIN_SET;
-    else
-      return GPIO_PIN_RESET;
+   if (omega <= 0)
+	return GPIO_PIN_SET;
+   else
+	return GPIO_PIN_RESET;
   }
 
   void run_tick()
   {
 
-    if (HAL_GetTick() - prev_tim < 30)
-      return;
+   if (HAL_GetTick() - prev_tim < 30)
+	return;
 
-    kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
-    for (int i = 0; i < 4; i++)
-    {
-      pid_inputs[i] = motor_encoders[i].get_encoder_omega();
-    }
+   kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
+   for (int i = 0; i < 4; i++)
+   {
+	pid_inputs[i] = motor_encoders[i].get_encoder_omega();
+   }
 
-    pid_set_points[0] = kinematics.v1;
-    pid_set_points[1] = kinematics.v2;
-    pid_set_points[2] = kinematics.v3;
-    pid_set_points[3] = kinematics.v4;
+   pid_set_points[0] = kinematics.v1;
+   pid_set_points[1] = kinematics.v2;
+   pid_set_points[2] = kinematics.v3;
+   pid_set_points[3] = kinematics.v4;
 
-    if ((
-            pid_controllers[0].Compute() &&
-            pid_controllers[1].Compute() &&
-            pid_controllers[2].Compute() &&
-            pid_controllers[3].Compute()))
-    {
-    }
-    for (int i = 0; i < 4; i++)
-    {
-      motor_drivers[i].run_motor(get_dir(pid_inputs[i]), pid_outputs[i]);
-    }
-    prev_tim = HAL_GetTick();
+   if ((
+	  pid_controllers[0].Compute() &&
+	  pid_controllers[1].Compute() &&
+	  pid_controllers[2].Compute() &&
+	  pid_controllers[3].Compute()))
+   {
+   }
+   for (int i = 0; i < 4; i++)
+   {
+	motor_drivers[i].run_motor(get_dir(pid_inputs[i]), pid_outputs[i]);
+   }
+   prev_tim = HAL_GetTick();
   }
 };
 
 #endif // __cplusplus
 
+
 void init_robot()
 {
 
-  Robot r;
-  while (1)
-  {
-    HAL_GPIO_TogglePin(M1D_GPIO_Port, M2D_Pin);
-    r.run_tick();
-  }
+ Robot r = Robot();
+ while (1)
+ {
+  HAL_GPIO_TogglePin(M1D_GPIO_Port, M2D_Pin);
+  r.run_tick();
+ }
 }
