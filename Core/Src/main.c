@@ -15,7 +15,7 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
+/* USER CODE END Header */  init_CRC_Table(crc_table, 7);
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 //#include "crc.h"
@@ -25,6 +25,7 @@
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
+#include "joystick.c"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -108,8 +109,10 @@ int main(void)
   //MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
-
+  init_CRC_Table(crc_table, 7);
   init_robot();
+  HAL_UART_Receive_DMA(&huart4, Rx_data, 10);
+
 
   /* USER CODE END 2 */
   /* Infinite loop */

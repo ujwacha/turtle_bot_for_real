@@ -1,4 +1,5 @@
 #include "robot.hpp"
+#include "joystick.h"
 
 float Robot::base_radius = 0.595f/2.0f;
 float Robot::wheel_radius = 0.425f/2.0f;

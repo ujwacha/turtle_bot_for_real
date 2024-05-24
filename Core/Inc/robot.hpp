@@ -14,11 +14,17 @@
 #include "api_functions.hpp"
 #include "kinematics.hpp"
 #include "PID.hpp"
-#include "crc8.hpp"
-#include "joystick.hpp"
+#include "crc.h"
+#include "joystick.h"
 #ifdef __cplusplus
 #include <cstdint>
 #include <cstdio>
+
+template <typename t>
+inline t map(t x, t in_min, t in_max, t out_min, t out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 class Robot
 {
@@ -109,16 +115,21 @@ class Robot
    if (HAL_GetTick() - prev_tim < 30)
 	return;
 
-   kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
+   float lx = map<float>((float)data.lx, -128.0, 127.0, -1.0, 1.0);
+   float ly = map<float>((float)data.ly, -128.0, 127.0, -1.0, 1.0);
+   float trig = map<float>((float)(data.lt - data.rt), -255.0, 255.0, -1.0, 1.0);
+
+   kinematics.get_motor_omegas(lx, ly, trig); // TODO: here we have to use Vx, Vy and omega from joystick
+
    for (int i = 0; i < 4; i++)
    {
 	pid_inputs[i] = motor_encoders[i].get_encoder_omega();
    }
 
-   pid_set_points[0] = kinematics.v1;
-   pid_set_points[1] = kinematics.v2;
-   pid_set_points[2] = kinematics.v3;
-   pid_set_points[3] = kinematics.v4;
+   pid_set_points[0] = kinematics.v1 * max_motor_omegas[0];
+   pid_set_points[1] = kinematics.v2 * max_motor_omegas[1];
+   pid_set_points[2] = kinematics.v3 * max_motor_omegas[2];
+   pid_set_points[3] = kinematics.v4 * max_motor_omegas[3];
 
    if ((
 	  pid_controllers[0].Compute() &&
@@ -129,7 +140,9 @@ class Robot
    }
    for (int i = 0; i < 4; i++)
    {
-	motor_drivers[i].run_motor(get_dir(pid_inputs[i]), pid_outputs[i]);
+   for (int i = 0; i < 4; i++) {
+     motor_drivers[i].run_motor(get_dir(pid_inputs[i]), (pid_outputs[i] / max_motor_omegas[i]) * 100.0);
+   }
    }
    prev_tim = HAL_GetTick();
   }
