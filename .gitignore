@@ -36,11 +36,9 @@
 /Core/Inc/#joystick.hpp#
 /Core/Inc/.crc.h.~undo-tree~
 /Core/Inc/.stm32f4xx_hal_conf.h.~undo-tree~
-/Core/Inc/crc.h
 /Core/Src/#crc.c#
 /Core/Src/.crc.c.~undo-tree~
 /Core/Src/.crc8.cpp.~undo-tree~
-/Core/Src/crc.c
 /Drivers/CMSIS/Device/ST/STM32F4xx/Include/.stm32f407xx.h.~undo-tree~
 /Drivers/STM32F4xx_HAL_Driver/Inc/.stm32f4xx_hal_crc.h.~undo-tree~
 /Drivers/STM32F4xx_HAL_Driver/Inc/.stm32f4xx_hal_def.h.~undo-tree~
