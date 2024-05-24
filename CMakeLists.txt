@@ -60,6 +60,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   Core/Src/kinematics.cpp
   Core/Src/PID.cpp
   Core/Src/printf_config.c
+ Core/Src/crc.c
+  Core/Src/joystick.c
 )
 
 # Add include paths

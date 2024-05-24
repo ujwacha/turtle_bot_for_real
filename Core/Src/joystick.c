@@ -1,12 +1,13 @@
  #include "joystick.h"
+#pragma once
 
  void blink()
 {
   uint32_t now = HAL_GetTick();
-  if (now - last_blick > 50)
+  if (now - last_blink > 50)
   {
     HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
-    last_blick = now;
+    last_blink = now;
   }
 }
 

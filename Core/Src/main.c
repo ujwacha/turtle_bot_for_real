@@ -15,7 +15,7 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */  init_CRC_Table(crc_table, 7);
+/* USER CODE END Header */  
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 //#include "crc.h"
@@ -109,7 +109,7 @@ int main(void)
   //MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
-  init_CRC_Table(crc_table, 7);
+  //init_CRC_Table(crc_table, 7);
   init_robot();
   HAL_UART_Receive_DMA(&huart4, Rx_data, 10);
 

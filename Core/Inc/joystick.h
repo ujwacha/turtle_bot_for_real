@@ -1,12 +1,12 @@
 #include "usart.h"
 #include "crc.h"
 #include <stdbool.h>
-
+#pragma once
 #define START_BYTE 0xA5
 
 #pragma pack(push, 1)
 
-typedef struct
+typedef struct _JoyData
 {
   int8_t lx;
   int8_t ly;
@@ -23,4 +23,4 @@ bool is_waiting_for_start_byte = true;
 uint8_t Rx_data[10];
 uint8_t crc_table[CRC8_TABLE_SIZE];
 JoyData data;
-uint32_t last_blick = 0;
+uint32_t last_blink = 0;

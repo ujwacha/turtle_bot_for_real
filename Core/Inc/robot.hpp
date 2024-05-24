@@ -1,3 +1,4 @@
+#pragma once
 #ifndef ROBOT_H_
 #define ROBOT_H_
 #endif
@@ -62,7 +63,8 @@ class Robot
  public:
   Robot() {
    robot_init();
-  }
+   init_CRC_Table(crc_table, 7); }
+
 
   Driver motor_drivers[4] ={
    Driver(motor_dir_ports[0], motor_dir_pins[0], motor_pwm_timers[0], motor_pwm_timer_channels[0], max_pwm[0], 1),
@@ -87,7 +89,7 @@ class Robot
   {
    for (int i = 0; i < 4; i++)
    {
-	pid_controllers[i].SetOutputLimits(0, max_motor_omegas[i]);
+	pid_controllers[i].SetOutputLimits(-max_motor_omegas[i], max_motor_omegas[i]);
 	pid_controllers[i].SetSampleTime(30);
    }
   }
