@@ -63,7 +63,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   Core/Src/kinematics.cpp
   Core/Src/PID.cpp
   Core/Src/print_config.c
-  Core/Src/crc8.cpp
   Core/Src/joystick.cpp
 )
 
