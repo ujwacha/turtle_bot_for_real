@@ -1,47 +1,173 @@
-#include "joystick.hpp" 
+#include "joystick.hpp"
+#include "main.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_gpio.h"
+#include "stm32f4xx_hal_uart.h"
+#include "usart.h"
+#include <cstring>
+#include <cstdint>
+bool is_waiting_for_start_byte = true;
+uint8_t Rx_data[sizeof(JoyData) + 2];
+JoyData data;
+uint32_t last_blink = 0;
+uint8_t crc_table[CRC8_TABLE_SIZE];
+
+uint16_t prev_time = 0;
 
 
-void blick()
-{
- uint32_t now = HAL_GetTick();
- if (now - last_blick > 50)
- {
-  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-  last_blick = now;
- }
+
+
+
+
+
+const uint8_t crc8x_table[256] = {
+0x00,0x31,0x62,0x53,0xC4,0xF5,0xA6,0x97,0xB9,0x88,0xDB,0xEA,0x7D,0x4C,0x1F,0x2E,
+0x43,0x72,0x21,0x10,0x87,0xB6,0xE5,0xD4,0xFA,0xCB,0x98,0xA9,0x3E,0x0F,0x5C,0x6D,
+0x86,0xB7,0xE4,0xD5,0x42,0x73,0x20,0x11,0x3F,0x0E,0x5D,0x6C,0xFB,0xCA,0x99,0xA8,
+0xC5,0xF4,0xA7,0x96,0x01,0x30,0x63,0x52,0x7C,0x4D,0x1E,0x2F,0xB8,0x89,0xDA,0xEB,
+0x3D,0x0C,0x5F,0x6E,0xF9,0xC8,0x9B,0xAA,0x84,0xB5,0xE6,0xD7,0x40,0x71,0x22,0x13,
+0x7E,0x4F,0x1C,0x2D,0xBA,0x8B,0xD8,0xE9,0xC7,0xF6,0xA5,0x94,0x03,0x32,0x61,0x50,
+0xBB,0x8A,0xD9,0xE8,0x7F,0x4E,0x1D,0x2C,0x02,0x33,0x60,0x51,0xC6,0xF7,0xA4,0x95,
+0xF8,0xC9,0x9A,0xAB,0x3C,0x0D,0x5E,0x6F,0x41,0x70,0x23,0x12,0x85,0xB4,0xE7,0xD6,
+0x7A,0x4B,0x18,0x29,0xBE,0x8F,0xDC,0xED,0xC3,0xF2,0xA1,0x90,0x07,0x36,0x65,0x54,
+0x39,0x08,0x5B,0x6A,0xFD,0xCC,0x9F,0xAE,0x80,0xB1,0xE2,0xD3,0x44,0x75,0x26,0x17,
+0xFC,0xCD,0x9E,0xAF,0x38,0x09,0x5A,0x6B,0x45,0x74,0x27,0x16,0x81,0xB0,0xE3,0xD2,
+0xBF,0x8E,0xDD,0xEC,0x7B,0x4A,0x19,0x28,0x06,0x37,0x64,0x55,0xC2,0xF3,0xA0,0x91,
+0x47,0x76,0x25,0x14,0x83,0xB2,0xE1,0xD0,0xFE,0xCF,0x9C,0xAD,0x3A,0x0B,0x58,0x69,
+0x04,0x35,0x66,0x57,0xC0,0xF1,0xA2,0x93,0xBD,0x8C,0xDF,0xEE,0x79,0x48,0x1B,0x2A,
+0xC1,0xF0,0xA3,0x92,0x05,0x34,0x67,0x56,0x78,0x49,0x1A,0x2B,0xBC,0x8D,0xDE,0xEF,
+0x82,0xB3,0xE0,0xD1,0x46,0x77,0x24,0x15,0x3B,0x0A,0x59,0x68,0xFF,0xCE,0x9D,0xAC };
+
+uint8_t calculate_cr8x_fast(uint8_t* data, size_t len) {
+    uint8_t crc = 0xFF; // init value
+    for (size_t i = 0; i < len; i++) {
+         crc = crc8x_table[data[i] ^ crc];
+     }
+   return crc;
+}
+
+
+
+
+
+
+void init_crc_joy() {
+  HAL_UART_Receive_DMA(&huart4, Rx_data, 1);
+
+  // for (int i = 0 ; i < 10; i++) {
+  //   printf("%i ", crc_table[i]);
+  // }
+
+  // printf("\n");
 
 }
+
+JoyData get_present_data() {
+  return data;
+}
+
+ void blink()
+{
+  // uint32_t now = HAL_GetTick();
+  // if (now - last_blink > 50)
+  // {
+    HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
+    //    last_blink = now;
+    //  }
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
- blink();
- printf("Recved\n");
 
- if(huart-> Instance == huart4.Instance)
- { 
-  if (is_waiting_for_start_byte)
+  HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
+
+  if (huart->Instance == huart4.Instance)
   {
-   if (Rx_data[0] == START_BYTE)
-   {
+
+    // for (unsigned int i = 0 ; i < sizeof(JoyData) + 2 ; i++) {
+    //   printf("%x  ", Rx_data[i]);
+    // }
+    // printf("\n");
+ 
+
+
+    if (is_waiting_for_start_byte) {
+      if (Rx_data[0] == START_BYTE) {
 	is_waiting_for_start_byte = false;
-	HAL_UART_Receive_DMA(huart, data, sizeof(data) - 1);
-   }
-   else
-   {
+	
+	HAL_GPIO_TogglePin(ORANGE_LED_GPIO_Port, ORANGE_LED_Pin);
 
-	HAL_UART_Receive_DMA(huart, data, 1);
-   }
+	HAL_UART_Receive_DMA(huart, Rx_data+1, sizeof(Rx_data) - 1);
+	
+      } else {
+	is_waiting_for_start_byte = true;
+	HAL_UART_Receive_DMA(huart, Rx_data, 1);
+      }
+    } else {
+
+	uint8_t crc = calculate_cr8x_fast(Rx_data, sizeof(JoyData) + 1);
+	if (crc == Rx_data[sizeof(JoyData) + 1]) {
+	  memcpy(&data, Rx_data+1, sizeof(JoyData));
+
+	  //	  printf("%i  %i\n", data.lx, data.ly);
+
+	  blink();
+	}
+	
+	
+	is_waiting_for_start_byte = true;
+
+	HAL_UART_Receive_DMA(huart, Rx_data, 1);
+      }
+
+
+
+
+
+    
+
+    // if (is_waiting_for_start_byte)
+    // {
+
+    //   if (Rx_data[0] == START_BYTE)
+    //   {
+    //     is_waiting_for_start_byte = false;
+    //     HAL_UART_Receive_DMA(huart, Rx_data + 1, sizeof(Rx_data) - 1);
+    //   }
+    //   else
+    //   {
+
+    //     HAL_UART_Receive_DMA(huart, Rx_data, 1);
+    //   }
+    // }
+    // else
+    // {
+    //   is_waiting_for_start_byte = true;
+
+
+    //   if (HAL_GetTick() - prev_time > 100) {
+    // 	for (int i = 1; i <10; i++) {
+    // 	  printf("%i", Rx_data[i]);
+    // 	}
+
+    // 	printf("\n");
+    //   }
+      
+
+    //   uint8_t hash = get_CRC_Hash(Rx_data + 1, 8, crc_table);
+    //   if (hash == Rx_data[sizeof(Rx_data) - 1])
+    //   {
+    //       memcpy(&data, Rx_data + 1, 8);
+    //       blink();
+    //       printf("Callback: %d %d %d %d %u %u %04x\n",
+    //            data.lx,
+    //            data.ly,
+    //            data.rx,
+    //            data.ry,
+    //            data.lt,
+    //            data.rt,
+    //            data.buttons);
+    //   }
+    //    }
   }
-  else
-  {
-   is_waiting_for_start_byte = true;
-   HAL_UART_Receive_DMA(huart, data, 1);
-   uint8_t hash = get_CRC_Hash(data + 1, 12, crc_table);
-   if (hash == data[sizeof(data) - 1])
-   {
-	memcpy(&JoyData,data + 1, 64);
-
-   }
-
-  }
- }
 }

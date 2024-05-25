@@ -15,7 +15,7 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
+/* USER CODE END Header */  
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 //#include "crc.h"
@@ -50,6 +50,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+
+
 
 /* USER CODE END PV */
 
@@ -109,7 +112,11 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
+  
+
+
   init_robot();
+
 
   /* USER CODE END 2 */
   /* Infinite loop */

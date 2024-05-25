@@ -20,6 +20,8 @@ void Kinematics::get_motor_omegas(float Vx, float Vy, float omega)
  v2 = motor_omegas[1];
  v3 = motor_omegas[2];
  v4 = motor_omegas[3];
+
+ reset();
 }
 
 void Kinematics::reset()

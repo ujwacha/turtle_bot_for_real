@@ -1,6 +1,5 @@
 #include "driver.hpp"
 #include "main.h"
-#include "printf_config.c"
 #include "stm32f407xx.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "gpio.h"
@@ -21,7 +20,7 @@ void Driver::run_motor(GPIO_PinState dir,float percentage) {
 
  uint32_t pwm = (percentage / 100.00f) * max_pwm;
  HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
- printf("%d\n",(int)percentage);
+ // printf("%d\n",(int)percentage);
  HAL_GPIO_WritePin(dir_channel, dir_pin, get_pinstate(dir));
  __HAL_TIM_SET_COMPARE(timer_pwm, timer_channel, pwm);
 

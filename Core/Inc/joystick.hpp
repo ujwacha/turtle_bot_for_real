@@ -1,52 +1,27 @@
-#ifdef _JOY_MSG_HPP
-#define _JOY_MSG_HPP
-#endif
-
-#include <memory.h>
 #include "usart.h"
-//#include <gpio.c>
+#include <stdbool.h>
+#include <cstring>
+#include <cstdio>
 #include "crc8.hpp"
-
-
 #define START_BYTE 0xA5
 
-#define BUTTONS(button) (1 << button)
-namespace JoyMsg
-{
-    namespace PS4Msg
-    {
-        enum PS4Buttons
-        {
-             Cross,
-             Circle,
-             Square,
-             Triangle,
-             Share,
-             Power,
-             Option,
-             L3,
-             R3,
-             L1, 
-             R1,
-             Up,
-             Down,
-             Left,
-             Right,
-             Touch
-        };
-    }  
-}     
- struct JoyData
-{
-  int8_t lx;
-  int8_t ly;
-  int8_t rx;
-  int8_t ry;
-  uint8_t lt;
-  uint8_t rt;
-  uint16_t buttons;
-};
+#pragma pack(push, 1)
 
-bool is_waiting_for_start_byte = true;
-uint8_t data[66];
-uint8_t crc_table[CRC_HASH_TABLE_SIZE];
+typedef struct _JoyData
+{
+  uint16_t buttons;
+  uint8_t lx;
+  uint8_t ly;
+  uint8_t rx;
+  uint8_t ry;
+  uint8_t l2;
+  uint8_t r2;
+  uint8_t hat;
+  uint8_t pad;
+} JoyData;
+
+#pragma pack(pop)
+
+
+void init_crc_joy();
+JoyData get_present_data();

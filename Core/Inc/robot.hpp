@@ -12,13 +12,14 @@
 #include "encoder.hpp"
 #include "kinematics.hpp"
 #include "api_functions.hpp"
-#include "kinematics.hpp"
 #include "PID.hpp"
-#include "crc8.hpp"
 #include "joystick.hpp"
 #ifdef __cplusplus
 #include <cstdint>
 #include <cstdio>
+
+
+
 
 class Robot
 {
@@ -53,9 +54,17 @@ class Robot
   double ki[4];
   double kd[4];
 
+
+
  public:
   Robot() {
-   robot_init();
+
+  robot_init();
+  
+  init_crc_joy();
+
+  HAL_GPIO_TogglePin(ORANGE_LED_GPIO_Port, ORANGE_LED_Pin);
+  
   }
 
   Driver motor_drivers[4] ={
@@ -76,6 +85,8 @@ class Robot
    PID(pid_inputs + 1, pid_outputs + 1, pid_set_points + 1, kp[1], ki[1], kd[1], P_ON_E, DIRECT),
    PID(pid_inputs + 2, pid_outputs + 2, pid_set_points + 2, kp[2], ki[2], kd[2], P_ON_E, DIRECT),
   };
+
+  float omegas[4];
 
   void robot_init()
   {
@@ -109,28 +120,76 @@ class Robot
    if (HAL_GetTick() - prev_tim < 30)
 	return;
 
-   kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
-   for (int i = 0; i < 4; i++)
-   {
-	pid_inputs[i] = motor_encoders[i].get_encoder_omega();
-   }
 
-   pid_set_points[0] = kinematics.v1;
-   pid_set_points[1] = kinematics.v2;
-   pid_set_points[2] = kinematics.v3;
-   pid_set_points[3] = kinematics.v4;
+   HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+   
+   // kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
+   // for (int i = 0; i < 4; i++)
+   // {
+   // 	pid_inputs[i] = motor_encoders[i].get_encoder_omega();
+   // }
 
-   if ((
-	  pid_controllers[0].Compute() &&
-	  pid_controllers[1].Compute() &&
-	  pid_controllers[2].Compute() &&
-	  pid_controllers[3].Compute()))
-   {
+   // pid_set_points[0] = kinematics.v1;
+   // pid_set_points[1] = kinematics.v2;
+   // pid_set_points[2] = kinematics.v3;
+   // pid_set_points[3] = kinematics.v4;
+
+   // if ((
+   // 	  pid_controllers[0].Compute() &&
+   // 	  pid_controllers[1].Compute() &&
+   // 	  pid_controllers[2].Compute() &&
+   // 	  pid_controllers[3].Compute()))
+   // {
+   // }
+   // for (int i = 0; i < 4; i++)
+   // {
+   // 	motor_drivers[i].run_motor(get_dir(pid_inputs[i]), pid_outputs[i]);
+   // }
+
+   JoyData data = get_present_data();
+
+
+
+
+   float vy = -1* ((float)data.lx - 127.0f) / 127.0f;
+   float vx = -1*((float)data.ly - 127.0f) / 127.0f;
+   float om = ((float)(data.r2 - data.l2)) / 255.0f;
+
+
+
+   //   // printf("%f %f %f\n", vx, vy, om);
+   
+   kinematics.get_motor_omegas(vx, vy, om);
+
+
+   omegas[0] = (float)kinematics.v1;
+   omegas[3] = (float)kinematics.v2;
+   omegas[1] = (float)kinematics.v3;
+   omegas[2] = (float)kinematics.v4;
+
+
+   for (int i = 0; i < 4; i++) {
+     motor_drivers[i].run_motor(get_dir(omegas[i]), kin_to_perc((float)omegas[i]));
+     //printf("%f  ", omegas[0]);
+
    }
-   for (int i = 0; i < 4; i++)
-   {
-	motor_drivers[i].run_motor(get_dir(pid_inputs[i]), pid_outputs[i]);
-   }
+   //printf("\n");
+
+   
+   //printf("%i  %i  %i  %i\n", data.lx, data.ly, data.l2, data.r2);
+   
+   // printf("tick: %d %d %d %d %u %u %04x\n",
+   // 	  data.lx,
+   // 	  data.ly,
+   // 	  data.rx,
+   // 	  data.ry,
+   // 	  data.lt,
+   // 	  data.rt,
+   // 	  data.buttons);
+
+
+   // printf("69\n");
+
    prev_tim = HAL_GetTick();
   }
 };
@@ -144,7 +203,7 @@ void init_robot()
  Robot r = Robot();
  while (1)
  {
-  HAL_GPIO_TogglePin(M1D_GPIO_Port, M2D_Pin);
+   //  HAL_GPIO_TogglePin(M1D_GPIO_Port, M2D_Pin);
   r.run_tick();
  }
 }

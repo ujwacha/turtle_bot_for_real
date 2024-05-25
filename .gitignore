@@ -45,3 +45,13 @@
 /Drivers/STM32F4xx_HAL_Driver/Inc/.stm32f4xx_hal_crc.h.~undo-tree~
 /Drivers/STM32F4xx_HAL_Driver/Inc/.stm32f4xx_hal_def.h.~undo-tree~
 /Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/.stm32f4xx_hal_eth_legacy.h.~undo-tree~
+/.turtle_bot.ioc.~undo-tree~
+/Core/Inc/.PID.hpp.~undo-tree~
+/Core/Inc/.crc8.h.~undo-tree~
+/Core/Inc/.crc8.hpp.~undo-tree~
+/Core/Inc/.joystick.hpp.~undo-tree~
+/Core/Inc/joystick.hpp~
+/Core/Src/.crc8.c.~undo-tree~
+/Core/Src/.joystick.c.~undo-tree~
+/Core/Src/.joystick.cpp.~undo-tree~
+/Core/Src/joystick.cpp~
