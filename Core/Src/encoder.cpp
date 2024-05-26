@@ -15,7 +15,7 @@ float Encoder::get_encoder_omega()
   omega = (2.0f * PI)*((float)get_count()/((float)cpr*float(sampling_time))) * 1000.0f;
   reset_encoder_count();
  }
- return omega;
+ return dir*omega;
 }
 
 int32_t Encoder::get_count()
@@ -28,14 +28,14 @@ int32_t Encoder::get_count()
  return count;
 }
 
-// int64_t Encoder::get_count_aggregate()
-// {
-//  return count_aggregate + get_count();
-// }
+int64_t Encoder::get_count_aggregate()
+{
+  return count_aggregate + (int64_t)get_count();
+}
 
 void Encoder::reset_encoder_count()
 {
- // count_aggregate += get_count();
+ count_aggregate += get_count();
  henc->Instance->CNT = 0;
  last_reset_time = HAL_GetTick();
 }

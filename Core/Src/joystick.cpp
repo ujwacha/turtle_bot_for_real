@@ -79,7 +79,7 @@ JoyData get_present_data() {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 
-  HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
+  //  HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
 
   if (huart->Instance == huart4.Instance)
   {

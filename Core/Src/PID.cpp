@@ -5,6 +5,8 @@
  * This Library is licensed under the MIT License
  **********************************************************************************************/
 #include "PID.hpp"
+#include "main.h"
+#include "stm32f4xx_hal_gpio.h"
 #include <cstdint>
 #include <stm32f4xx_hal.h>
 /*Constructor (...)*********************************************************
@@ -49,7 +51,10 @@ PID::PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki,
  bool PID::Compute() {
   if (!inAuto)
    return false;
+
+  HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
   unsigned long now = HAL_GetTick();
+
   unsigned long timeChange = (now - lastTime);
   if (timeChange >= SampleTime) {
    /*Compute all the working error variables*/

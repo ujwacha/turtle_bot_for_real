@@ -14,5 +14,6 @@ TIM_HandleTypeDef* Robot::encoder_timers[4] = {&ENC5_Timer,&ENC3_Timer,&ENC2_Tim
 
 float Robot::max_pwm[4] = {499,499,499,499};
 
-uint16_t Robot::count_per_revolution[4] = {1000,1000,1000,1000};
+uint16_t Robot::count_per_revolution[4] = {1000,1000,1000,500};
+
 
