@@ -37,13 +37,10 @@ public:
       float _intmin = -400.0f, float _intmax = +400.0f);
 
 
-  float set_limits(float _min , float _max);
-
-  float set_int_limits(float _intmin , float _intmax );
-
-  float set_sampling_time(float _T);
-
-  float set_tau(float _tau);
+  void set_limits(float _min , float _max);
+  void set_int_limits(float _intmin , float _intmax );
+  void set_sampling_time(float _T);
+  void set_tau(float _tau);
 
   float PIDController_Update(float setpoint, float measurement);
 

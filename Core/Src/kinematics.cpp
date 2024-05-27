@@ -54,4 +54,3 @@ Kinematics::Kinematics(float _base_radius, float _wheel_radius)
  reset();
 }
 
-

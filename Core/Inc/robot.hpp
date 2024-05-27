@@ -21,6 +21,10 @@
 
 
 
+float enc_measurements[4];
+float pid_setpoints[4];
+float pwm_percts[4];
+ 
 class Robot
 {
  private:
@@ -44,15 +48,15 @@ class Robot
   static float max_pwm[4]; // this is the value of pwm for 100% duty cycle
   static float motor_omegas[4];
 
-  double pid_inputs[4] = {0.0, 0.0, 0.0, 0.0};
-  double pid_outputs[4] = {0.0, 0.0, 0.0, 0.0};
-  double pid_set_points[4] = {0.0, 0.0, 0.0, 0.0};
-  
+  // double pid_inputs[4] = {0.0, 0.0, 0.0, 0.0};
+  // double pid_outputs[4] = {0.0, 0.0, 0.0, 0.0};
+  // double pid_set_points[4] = {0.0, 0.0, 0.0, 0.0};
+ 
   float max_motor_pwms[4] = {499.0f, 499.0f, 499.0f, 499.0f}; // pwm
 
-  double kp[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-  double ki[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-  double kd[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+  double kp[4] = {12.0f, 4.0f, 4.0f, 4.0f};
+  double ki[4] = {25.0f, 1.0f, 1.0f, 1.0f};
+  double kd[4] = {0.00f, 0.0f, 0.0f, 0.0f};
 
 
  public:
@@ -79,10 +83,10 @@ class Robot
     Encoder(encoder_timers[2], count_per_revolution[2],10,1),
   };
   PID pid_controllers[4] = {
-   PID(pid_inputs + 0, pid_outputs + 0, pid_set_points + 0, kp[0], ki[0], kd[0], P_ON_E, DIRECT),
-   PID(pid_inputs + 3, pid_outputs + 3, pid_set_points + 3, kp[3], ki[3], kd[3], P_ON_E, DIRECT),
-   PID(pid_inputs + 1, pid_outputs + 1, pid_set_points + 1, kp[1], ki[1], kd[1], P_ON_E, DIRECT),
-   PID(pid_inputs + 2, pid_outputs + 2, pid_set_points + 2, kp[2], ki[2], kd[2], P_ON_E, DIRECT),
+    PID(kp[0], ki[0], kd[0]),
+    PID(kp[3], ki[3], kd[3]),
+    PID(kp[1], ki[1], kd[1]),
+    PID(kp[2], ki[2], kd[2]),
   };
 
   float omegas[4];
@@ -91,28 +95,38 @@ class Robot
   {
    for (int i = 0; i < 4; i++)
    {
-	pid_controllers[i].SetOutputLimits(-max_pwm[i], max_pwm[i]);
-        pid_controllers[i].SetSampleTime(30);
-	pid_controllers[i].SetMode(AUTOMATIC);
+	pid_controllers[i].set_sampling_time(0.03);
+        pid_controllers[i].set_tau(0.01);
+	pid_controllers[i].set_limits(-1 * max_motor_pwms[i], max_motor_pwms[i]);
+	pid_controllers[i].set_int_limits(-350.0f, +350.0f);
    }
   }
 
   Kinematics kinematics = Kinematics(base_radius, wheel_radius);
 
-  float pwm_to_perc(double k)
+  float kin_to_perc(float k)
   {
+    if (k < 0)
+      return k * (-1.0);
+    else
+      return k;
+
+  }
+
+  float pwm_to_perc(float k) {
     if (k < 0)
       k = k * (-1.0);
     
     if (k > 499) {
       return 100.00f;
     }
-
-    return (k / 5.0f);
     
+    return (k / 5.0f);
   }
 
-  GPIO_PinState get_dir(double omega)
+
+
+  GPIO_PinState get_dir(float omega)
   {
    if (omega <= 0)
 	return GPIO_PIN_SET;
@@ -128,34 +142,8 @@ class Robot
 
 
    HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
-   
-   // kinematics.get_motor_omegas(1.5f, 0.0f, 0.0f); // TODO: here we have to use Vx, Vy and omega from joystick
-   // for (int i = 0; i < 4; i++)
-   // {
-   // 	pid_inputs[i] = motor_encoders[i].get_encoder_omega();
-   // }
-
-   // pid_set_points[0] = kinematics.v1;
-   // pid_set_points[1] = kinematics.v2;
-   // pid_set_points[2] = kinematics.v3;
-   // pid_set_points[3] = kinematics.v4;
-
-   // if ((
-   // 	  pid_controllers[0].Compute() &&
-   // 	  pid_controllers[1].Compute() &&
-   // 	  pid_controllers[2].Compute() &&
-   // 	  pid_controllers[3].Compute()))
-   // {
-   // }
-   // for (int i = 0; i < 4; i++)
-   // {
-   // 	motor_drivers[i].run_motor(get_dir(pid_inputs[i]), pid_outputs[i]);
-   // }
 
    JoyData data = get_present_data();
-
-
-
 
    float vy = -1 * ((float)data.lx - 127.0f) / 65.0f;
    
@@ -176,7 +164,7 @@ class Robot
      om = 0;
    }
    
-   //   // printf("%f %f %f\n", vx, vy, om);
+   // printf("%f %f %f\n", vx, vy, om);
    
    kinematics.get_motor_omegas(vx, vy, om);
 
@@ -189,46 +177,33 @@ class Robot
    omegas[2] = k * (float)kinematics.v4;
 
 
+
+   enc_measurements[0] = motor_encoders[0].get_encoder_omega();
+   pid_setpoints[0] = om * 20.0f;
    
+   pwm_percts[0] =
+       pid_controllers[0].PIDController_Update(pid_setpoints[0], enc_measurements[0]);
+
+   motor_drivers[0].run_motor(get_dir(pwm_percts[0]), pwm_to_perc(pwm_percts[0]));
    
-   for (int i = 0; i < 4; i++) {
-     // motor_drivers[i].run_motor(get_dir(omegas[i]),
-     // kin_to_perc((float)omegas[i]));
-     pid_inputs[i] = motor_encoders[i].get_encoder_omega();
-     pid_set_points[i] = omegas[i];
-   }
-
-
-   bool run = false;
-   for (int i = 0; i < 4; i++) {
-     if (pid_controllers[i].Compute()) {
-       run = true;
-     }
-   }
-
+  printf("%f %f %f\n", enc_measurements[0], pid_setpoints[0], pwm_to_perc(pwm_percts[0]));
    
-   if (run) {
+   // for (int i = 0; i < 4; i++) {
+//      float measurement = motor_encoders[i].get_encoder_omega();
+//      float setpoint = omegas[i];
+//      float pidout = pid_controllers[i].PIDController_Update(setpoint, measurement);
 
+//      motor_drivers[i].run_motor(get_dir(omegas[i]), kin_to_perc(omegas[i]));
 
-    for (int i = 0; i < 4; i++) {
-     // motor_drivers[i].run_motor(get_dir(pid_outputs[i]),
-     //                            kin_to_perc(pid_outputs[i]));
+//      printf("(%i , %f, %f, %f, %f) ", get_dir(omegas[i]), kin_to_perc(omegas[i]), pwm_to_perc(pidout), setpoint, measurement);
 
-     printf("%i, %f ", get_dir(pid_outputs[i]) , pwm_to_perc(pid_outputs[i]));
-   }
-   
+//      // printf("  (%f , %f)  ", motor_encoders[i].get_encoder_omega(), pidout);
+
+// //     printf("(%i, %f) ", get_dir(pidout), pwm_to_perc(pidout));
+//    }
+
    printf("\n");
 
-    
-
-   }
-
-   // float e1 = motor_encoders[0].get_encoder_omega();
-   // float e2 = motor_encoders[1].get_encoder_omega();
-   // float e3 = motor_encoders[2].get_encoder_omega();
-   // float e4 = motor_encoders[3].get_encoder_omega();
-   
-//   printf("%f  %f  %f  %f\n", e1, e2, e3, e4);
    prev_tim = HAL_GetTick();
   }
 };

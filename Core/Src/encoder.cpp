@@ -28,9 +28,10 @@ int32_t Encoder::get_count()
  return count;
 }
 
-int64_t Encoder::get_count_aggregate()
+int32_t Encoder::get_count_aggregate()
 {
-  return count_aggregate + (int64_t)get_count();
+  count_aggregate = count_aggregate + (int32_t)get_count();
+  return count_aggregate;
 }
 
 void Encoder::reset_encoder_count()
