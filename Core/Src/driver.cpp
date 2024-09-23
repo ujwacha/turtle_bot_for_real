@@ -50,7 +50,6 @@ GPIO_PinState Driver::get_pinstate(GPIO_PinState current) {
  GPIO_PinState retval = current;
  if (pos_dir < 0) {
 
-
   switch (current) {
    case GPIO_PIN_RESET:
 	retval = GPIO_PIN_SET;
