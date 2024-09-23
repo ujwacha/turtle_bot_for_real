@@ -55,3 +55,10 @@
 /Core/Src/.joystick.c.~undo-tree~
 /Core/Src/.joystick.cpp.~undo-tree~
 /Core/Src/joystick.cpp~
+/Core/Inc/*robot.hpp UPPER=HEAD*
+/Core/Inc/joystick.h
+/Core/Src/#PID.cpp#
+/Core/Src/#joystick.cpp#
+/Core/Src/.joystick.cpp~.~undo-tree~
+/Core/Src/.print_config.c.~undo-tree~
+/Core/Src/joystick.c
